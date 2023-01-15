@@ -28,18 +28,11 @@ The Bot will also need Moderator permissions on your instance. This is required 
 
 This bot is designed to be controlled through an API. The API is documented using OpenAPI 3.0.2. The documentation is available at http://localhost:8088/docs.
 
-The built-in documentation will allow full control of the bot. Once the bot is loaded, it will  need to be started by visiting from the API documentation. The bot will then start sending messages to new users.
-
-The bot does not start automatically to allow for configuration and adding posts to the database before the bot starts.
-
-Setting the Environment Variable `QUIET` to `True` will disable the bot from sending messages to new users. This is useful for testing and debugging.
-
 ## Environment Variables
 
 The following environment variables are required to run the bot, and should be set in the .env file.
 ```
 QUIET=True/False
-LOGGING_LEVEL=INFO
 MASTODON_ACCESS_TOKEN=The access token for your bot account on your Mastodon instance
 MASTODON_BASE_URL=The base URL for your Mastodon instance (e.g. https://stranger.social)
 DATABASE_HOSTNAME=postgres
@@ -58,17 +51,4 @@ ACCESS_TOKEN_EXPIRE_MINUTES=2
 - [ ] Add manual Account entry to database for testing and debugging.
 - [ ] Schedule messages to be sent at a later time based on delay.
 - [ ] Add bot stats to API.
-- [ ] Add stop bot command to API.
-- [ ] Clean up logger.
 
-## Revisions
-
-### 0.1.0 (2023-01-13)
-
-- Initial release
-
-### 0.2.0 (2023-01-15)
-
-- Added sent messages to database
-- Bug fixes
-- Cleaned up code
