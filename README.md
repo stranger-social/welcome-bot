@@ -31,6 +31,7 @@ This bot is designed to be controlled through an API. The API is documented usin
 ## Environment Variables
 
 The following environment variables are required to run the bot, and should be set in the .env file.
+```
 QUIET=True/False
 MASTODON_ACCESS_TOKEN=The access token for your bot account on your Mastodon instance
 MASTODON_BASE_URL=The base URL for your Mastodon instance (e.g. https://stranger.social)
@@ -42,3 +43,4 @@ DATABASE_USERNAME=postgres
 SECRET_KEY=Use genkey.py to generate a secret key
 ALGORITHM=HS256
 ACCESS_TOKEN_EXPIRE_MINUTES=2
+```
