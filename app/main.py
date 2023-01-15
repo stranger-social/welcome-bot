@@ -5,13 +5,16 @@ from .routers import auth, admin, post, bot
 import logging
 
 description = """
-This is an API controller for the Mastodon welcome-bot.
+The welcome-bot is a Mastodon bot that welcomes new users to a Mastodon instance.
+
+Use the API interface to add welcome messages to the database and start the bot. The bot will then automatically welcome new users to the instance. Checking the instance every 2 minutes for new users. 
+
 """
 
 app = FastAPI(
     title="welcome-bot",
     description=description,
-    version="0.1.0",
+    version="0.2.0",
     contact={
         "email": "azcoigreach@gmail.com",
     },

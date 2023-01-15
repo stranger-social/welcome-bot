@@ -25,6 +25,7 @@ async def start_welcome_bot(
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
                             detail=f"User {str(current_user.username)} is not active.")
     else:
-        background_tasks.add_task(welcome_bot.start_bot)
+        background_tasks.add_task(welcome_bot.monitor_instance)
+        background_tasks.add_task(welcome_bot.monitor_database)
         logger.info("welcome-bot started")
         return {"message": "welcome-bot started"}
