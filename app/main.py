@@ -1,14 +1,22 @@
+import sys
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from . import models
-from .database import engine
-from .routers import post, user, auth, vote
-from .config import settings
+from .routers import auth, admin, post, bot
+import logging
 
-# Replaced by alembic
-# models.Base.metadata.create_all(bind=engine) 
+description = """
+This is an API controller for the Mastodon welcome-bot.
+"""
 
-app = FastAPI()
+app = FastAPI(
+    title="welcome-bot",
+    description=description,
+    version="0.1.0",
+    contact={
+        "email": "azcoigreach@gmail.com",
+    },
+    docs_url="/docs", redoc_url=None,
+)
 
 origins = ["*"] # Configured for public API
 
@@ -19,12 +27,23 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
+app.include_router(bot.router)
 app.include_router(post.router)
-app.include_router(user.router)
+app.include_router(admin.router)
 app.include_router(auth.router)
-app.include_router(vote.router)
+
+
+logger = logging.getLogger("app")
+logger.setLevel(logging.DEBUG)
+
+@app.on_event("startup")
+def setup_logging():
+    # Configure the logger
+    handler = logging.StreamHandler(sys.stdout)
+    handler.setFormatter(logging.Formatter("[%(asctime)s] %(levelname)s in %(module)s: %(message)s"))
+    logger.addHandler(handler)
 
 @app.get("/")
 async def root():
-    return {"message": "Stranger API Server"}
+    return {"message": "welcome-bot-app"}
+

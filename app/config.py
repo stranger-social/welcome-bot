@@ -1,11 +1,15 @@
 from pydantic import BaseSettings
 
 class Settings(BaseSettings):
-    database_hostname: str
-    database_port: str
-    database_password: str
-    database_name: str
-    database_username: str
+    quiet: bool = True
+    mastodon_base_url: str
+    mastodon_domain: str
+    mastodon_access_token: str
+    database_hostname: str = "localhost"
+    database_port: str = "5432"
+    database_name: str = "welcomebot"
+    database_username: str = "postgres"
+    database_password: str = "postgres"
     secret_key: str
     algorithm: str
     access_token_expire_minutes: int

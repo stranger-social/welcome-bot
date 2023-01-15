@@ -1,9 +1,11 @@
 version: "3"
 services:
-  api:
-    image: azcoigreach/python-api
+  app:
+    build: .
+    env_file:
+        - ./.env
     ports:
-      - 80:8000
+      - 8088:8000
     environment:
       - DATABASE_HOSTNAME=${DATABASE_HOSTNAME}
       - DATABASE_PORT=${DATABASE_PORT}
@@ -13,17 +15,26 @@ services:
       - SECRET_KEY=${SECRET_KEY}
       - ALGORITHM=${ALGORITHM}
       - ACCESS_TOKEN_EXPIRE_MINUTES=${ACCESS_TOKEN_EXPIRE_MINUTES}
-
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    volumes:
+      - ./:/usr/src/app
     depends_on:
       - postgres
 
   postgres:
     image: postgres
+    ports:
+      - ${DATABASE_PORT}:${DATABASE_PORT}
     environment:
       - POSTGRES_PASSWORD=${DATABASE_PASSWORD}
       - POSTGRES_DB=${DATABASE_NAME}
+      - POSTGRES_USER=${DATABASE_USERNAME}
+      - POSTGRES_PORT=${DATABASE_PORT}
     volumes:
       - postgres-db:/var/lib/postgresql/data
+    command:
+      - postgres
+      - -p ${DATABASE_PORT}
 
 volumes:
   postgres-db:

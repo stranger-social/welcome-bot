@@ -12,11 +12,11 @@ router = APIRouter(
     tags=['Posts']
 )
 
-@router.get("/", response_model=List[schemas.PostOut])
+@router.get("/", response_model=List[schemas.PostResponse])
 async def get_posts(db: Session = Depends(get_db), current_user: int = Depends (oauth2.get_current_user), limit: int = 10, skip: int = 0, search: Optional[str] = ""):
     # posts = db.query(models.Post).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
 
-    results = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
+    results = db.query(models.Post).group_by(models.Post.id).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
     
 
     return results
@@ -31,16 +31,16 @@ async def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db), 
     return new_post
 
 
-@router.get("/latest", response_model=schemas.PostOut)
+@router.get("/latest", response_model=schemas.PostResponse)
 async def get_latest_post(db: Session = Depends(get_db), current_user: int = Depends (oauth2.get_current_user)):
-    latest_post = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id).order_by(models.Post.id.desc()).first()
+    latest_post = db.query(models.Post).group_by(models.Post.id).order_by(models.Post.id.desc()).first()
     return latest_post
 
 
-@router.get("/{id}", response_model=schemas.PostOut)
+@router.get("/{id}", response_model=schemas.PostResponse)
 async def get_post(id: int, response: Response, db: Session = Depends(get_db), current_user: int = Depends (oauth2.get_current_user)):
     
-    post = db.query(models.Post, func.count(models.Vote.post_id).label("votes")).join(models.Vote, models.Vote.post_id == models.Post.id, isouter=True).group_by(models.Post.id).filter(models.Post.id == id).first()
+    post = db.query(models.Post).group_by(models.Post.id).filter(models.Post.id == id).first()
     if not post:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
                             detail=f"Message with ID {str(id)} was not found")
