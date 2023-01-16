@@ -37,7 +37,7 @@ app.include_router(auth.router)
 
 
 logger = logging.getLogger("app")
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 @app.on_event("startup")
 def setup_logging():
