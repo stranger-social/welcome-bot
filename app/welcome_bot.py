@@ -6,7 +6,6 @@ import aiohttp
 from .database import get_db
 from . import models, schemas
 
-
 import logging
 
 logger = logging.getLogger(__name__)
@@ -44,7 +43,6 @@ async def add_mastodon_acct(acct: schemas.MastodonUserCreate):
 async def stream_notifications():
     # Use the base URL and the endpoint: GET /api/v1/streaming/user/notification HTTP/1.1
     # https://docs.joinmastodon.org/methods/streaming/#notification
-    # use aiohttp to make the request
     async with aiohttp.ClientSession() as session:
         async with session.get(f"{settings.mastodon_base_url}/api/v1/notifications", headers={"Authorization": f"Bearer {settings.mastodon_access_token}"}) as response:
             if response.status == 200:
@@ -284,9 +282,6 @@ async def monitor_database():
                 logger.error(f"monitor_database | Exception occured: {e}")
                 pass
         await asyncio.sleep(30)
-
-
-
 
 # Main loop
 async def welcome_bot_main():
