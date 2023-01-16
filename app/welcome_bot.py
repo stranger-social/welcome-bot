@@ -1,17 +1,12 @@
 from .config import settings
-import os
 import asyncio
 from datetime import datetime
-import json
 from fastapi import Depends
 import aiohttp
-from .database import get_db, get_db_
-from sqlalchemy.orm import Session
-from sqlalchemy.sql import select
-from sqlalchemy.sql import insert
-from sqlalchemy.sql import update
-
+from .database import get_db
 from . import models, schemas
+
+
 import logging
 
 logger = logging.getLogger(__name__)
@@ -20,6 +15,7 @@ logger = logging.getLogger(__name__)
 Wait for new users to register on the Mastodon instance and add them to the database
 send all the new users the welcome messages stored in the database
 '''
+
 
 # Check if Quiet mode is enabled
 # Quiet mode prevents messages from being sent to the Mastodon instance
@@ -268,7 +264,7 @@ async def monitor_instance():
             count = 0
         if new_users:
             logger.debug(f"New users: {count}")
-        await asyncio.sleep(120)
+        await asyncio.sleep(30)
 
 # Monitor the database for new users
 async def monitor_database():
@@ -287,9 +283,11 @@ async def monitor_database():
             except Exception as e:
                 logger.error(f"monitor_database | Exception occured: {e}")
                 pass
-        await asyncio.sleep(120)
+        await asyncio.sleep(30)
+
+
+
 
 # Main loop
 async def welcome_bot_main():
-    # Start the monitor_instance() and monitor_database() functions
     await asyncio.gather(monitor_instance(), monitor_database())
