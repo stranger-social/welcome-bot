@@ -1,7 +1,10 @@
+from .config import settings
+
 import sys
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from .routers import auth, admin, post, bot
+
 import logging
 
 description = """
@@ -35,16 +38,19 @@ app.include_router(post.router)
 app.include_router(admin.router)
 app.include_router(auth.router)
 
+# Set logging level to variable settings.logging_level
+logging.basicConfig(level=settings.logging_level)
+logger = logging.getLogger(__name__)
 
-logger = logging.getLogger("app")
-logger.setLevel(logging.INFO)
+# Configure the logger
+handler = logging.StreamHandler(sys.stdout)
+handler.setFormatter(logging.Formatter("[%(asctime)s] %(levelname)s in %(module)s: %(message)s"))
+logger.addHandler(handler)
+
 
 @app.on_event("startup")
 def setup_logging():
-    # Configure the logger
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setFormatter(logging.Formatter("[%(asctime)s] %(levelname)s in %(module)s: %(message)s"))
-    logger.addHandler(handler)
+    pass
 
 @app.get("/")
 async def root():

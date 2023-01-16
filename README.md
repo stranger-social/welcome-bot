@@ -33,6 +33,7 @@ This bot is designed to be controlled through an API. The API is documented usin
 The following environment variables are required to run the bot, and should be set in the .env file.
 ```
 QUIET=True/False
+LOGGING_LEVEL=INFO
 MASTODON_ACCESS_TOKEN=The access token for your bot account on your Mastodon instance
 MASTODON_BASE_URL=The base URL for your Mastodon instance (e.g. https://stranger.social)
 DATABASE_HOSTNAME=postgres
@@ -51,4 +52,16 @@ ACCESS_TOKEN_EXPIRE_MINUTES=2
 - [ ] Add manual Account entry to database for testing and debugging.
 - [ ] Schedule messages to be sent at a later time based on delay.
 - [ ] Add bot stats to API.
+- [ ] Add stop bot command to API.
+- [ ] Clean up logger.
 
+## Revisions
+
+### 0.1.0 (2023-01-13)
+
+- Initial release
+
+### 0.2.0 (2023-01-16)
+
+- Added sent messages to database
+- Bug fixes
