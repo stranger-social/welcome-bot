@@ -2,6 +2,7 @@ from pydantic import BaseSettings
 
 class Settings(BaseSettings):
     quiet: bool = True
+    logging_level: str = "INFO"
     mastodon_base_url: str
     mastodon_domain: str
     mastodon_access_token: str
