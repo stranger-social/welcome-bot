@@ -10,7 +10,7 @@ import logging
 description = """
 The welcome-bot is a Mastodon bot that welcomes new users to a Mastodon instance.
 
-Use the API interface to add welcome messages to the database and start the bot. The bot will then automatically welcome new users to the instance. Checking the instance every 2 minutes for new users. 
+Use the API interface to add welcome messages to the database and start the bot. The bot will then automatically welcome new users to the instance. Checking the instance every 30 seconds for new users. 
 
 """
 

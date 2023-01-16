@@ -1,10 +1,7 @@
-from csv import unregister_dialect
 from sqlalchemy import TIMESTAMP, Column, ForeignKey, Integer, String, Boolean, UniqueConstraint
 from sqlalchemy.sql.expression import text
 from sqlalchemy.sql.sqltypes import TIMESTAMP
 from sqlalchemy.orm import relationship
-from sqlalchemy.ext.declarative import declarative_base
-
 
 from .database import Base
 
