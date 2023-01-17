@@ -72,3 +72,9 @@ ACCESS_TOKEN_EXPIRE_MINUTES=2
 - Added sent messages to database
 - Bug fixes
 - Cleaned up code
+
+### 0.2.1 (2023-01-16)
+
+- Added bot user alerts in Mastodon as a direct message.
+- Added endpoints for Mastodon accounts.
+- Added is_running to start endpoint to prevernt multiple instances of the bot from running.

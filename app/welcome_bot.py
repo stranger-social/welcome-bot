@@ -150,6 +150,8 @@ async def mark_acct_as_welcomed(acct: schemas.MastodonUserCreate):
             # db.query(models.MastodonAccts).filter(models.MastodonAccts.acct == acct).update({models.MastodonAccts.welcomed: True})
             db.commit()
             logger.info(f"Marked {acct} as welcomed")
+            # Send alert to bot users
+            await send_alerts(f"Marked {acct} as welcomed")            
         except Exception as e:
             logger.error(f"mark_acct_as_welcomed | Exception occured: {e}")
             pass
@@ -166,6 +168,7 @@ async def read_welcome_messages():
         except Exception as e:
             logger.error(f"read_welcome_messages | Exception occured: {e}")
             pass
+
 # Create list of welcome messages that can be sent
 # Use models.Post.published to determine if the post should be sent
 # Check against models.PostSent to determine if the post has already been sent to the acct
@@ -220,13 +223,13 @@ async def send_welcome_messages(acct: schemas.MastodonUserCreate):
                                             data=payload                        
                                             ) as response:
                         if response.status == 200:
+                            # Mark the post as sent to the acct
+                            await mark_post_id_as_sent(post.id, acct.id)
                             logger.info(f"Response status: {response.status}")
                             logger.info(f"Welcome message sent to {acct.acct}")
                         else:
                             logger.warning(f"Response status: {response.status}")
                             logger.warning(f"Response content: {await response.text()}")
-                # Mark the post as sent to the acct
-                await mark_post_id_as_sent(post.id, acct.id)
             # sleep for 2 seconds
             await asyncio.sleep(2)
         
@@ -236,10 +239,61 @@ async def send_welcome_messages(acct: schemas.MastodonUserCreate):
             logger.info(f"Not marking {acct.acct} as welcomed.")
         else:
             await mark_acct_as_welcomed(acct.acct)
-            logger.info(f"Marked {acct.acct} as welcomed")
     except Exception as e:
         logger.error(f"send_welcome_messages | Exception occured: {e}")
         pass
+
+# read_users_with_alerts() - Read the users table and return a list of users that have alerts enabled
+async def read_users_with_alerts():
+    with get_db() as db:
+        # Check if the acct is in the database
+        try:
+            # Read the users from the database
+            users = db.query(models.User).filter(models.User.send_alerts == True).all()
+            logger.info(f"Read {len(users)} users from the database")
+            return users
+        except Exception as e:
+            logger.error(f"read_users_with_alerts | Exception occured: {e}")
+            pass
+
+# Send alerts to bot users
+async def send_alerts(alert_message: str):
+    # Check the 'users' table for users that have alerts enabled
+    # If alerts are enabled, send a message to the user
+    # If quiet mode is enabled, don't send the alert
+    logging.debug(f"send_alerts: Sending alerts")
+
+    try:
+        # Get the users that have alerts enabled
+        users = await read_users_with_alerts()
+        # Send the alert to the users
+        for user in users:
+            # Send the alert to the user
+            # If quiet mode is enabled, don't send the alert
+            if quiet_mode() == True:
+                logger.info(f"Not sending alert to {user.mastodon_acct}.")
+                logger.info(f"Alert content: {alert_message}")
+            else:
+                async with aiohttp.ClientSession() as session:
+                    logger.debug(f"Sending alert to {user.mastodon_acct}")
+                    mastodon_content = f"@{user.mastodon_acct} {alert_message}"
+                    async with session.post(f"{settings.mastodon_base_url}/api/v1/statuses", 
+                                            headers={"Authorization": f"Bearer {settings.mastodon_access_token}"},
+                                            data={"status": mastodon_content,
+                                                "visibility": "direct"}                        
+                                            ) as response:
+                        if response.status == 200:
+                            logger.info(f"Response status: {response.status}")
+                            logger.info(f"Alert sent to {user.mastodon_acct}")
+                        else:
+                            logger.warning(f"Response status: {response.status}")
+                            logger.warning(f"Response content: {await response.text()}")
+            # sleep for 2 seconds
+            await asyncio.sleep(2)
+    except Exception as e:
+        logger.error(f"send_alerts | Exception occured: {e}")
+        pass
+    
 
 '''
 Main welcome_bot functions
