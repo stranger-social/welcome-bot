@@ -2,7 +2,7 @@
 
 This is a Mastodon bot that welcomes new users to your instance.
 
-This bot does not offer a secure http endpoint. It is recommended to run this bot behhind a firewall or a reverse proxy.
+This bot does not offer a secure http endpoint. It is recommended to run this bot behind a firewall or a reverse proxy.
 
 The purpose of this bot is to welcome new users to your instance. It does this by sending a welcome message from a database to new users
 
