@@ -14,6 +14,8 @@ class User(Base):
     created_at = Column(TIMESTAMP(timezone=True), nullable=False, server_default=text('now()'))
     is_active = Column(Boolean, nullable=False, default=True)
     is_admin = Column(Boolean, nullable=False, default=False)
+    send_alerts = Column(Boolean, nullable=False, default=True)
+    mastodon_acct = Column(String, nullable=False)
 
 class MastodonAccts(Base):
     __tablename__ = "mastodon_accts"
