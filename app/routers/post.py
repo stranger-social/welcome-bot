@@ -11,17 +11,13 @@ router = APIRouter(
     tags=['Posts']
 )
 
-@router.get("/", response_model=List[schemas.PostResponse])
+@router.get("/", response_model=List[schemas.PostResponse], description="Get all posts (paginated) (searchable by title) [must be logged in]")
 async def get_posts(db: Session = Depends(get_db), current_user: int = Depends (oauth2.get_current_user), limit: int = 10, skip: int = 0, search: Optional[str] = ""):
-    # posts = db.query(models.Post).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
-
     results = db.query(models.Post).group_by(models.Post.id).filter(models.Post.title.contains(search)).limit(limit).offset(skip).all()
-    
-
     return results
 
 
-@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.PostResponse)
+@router.post("/", status_code=status.HTTP_201_CREATED, response_model=schemas.PostResponse, description="Create new welcome post [must be logged in]")
 async def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db), current_user: int = Depends (oauth2.get_current_user)):
     new_post = models.Post(owner_id=current_user.id , **post.dict())
     db.add(new_post)
@@ -30,13 +26,7 @@ async def create_posts(post: schemas.PostCreate, db: Session = Depends(get_db), 
     return new_post
 
 
-@router.get("/latest", response_model=schemas.PostResponse)
-async def get_latest_post(db: Session = Depends(get_db), current_user: int = Depends (oauth2.get_current_user)):
-    latest_post = db.query(models.Post).group_by(models.Post.id).order_by(models.Post.id.desc()).first()
-    return latest_post
-
-
-@router.get("/{id}", response_model=schemas.PostResponse)
+@router.get("/{id}", response_model=schemas.PostResponse, description="Get post by ID [must be logged in]")
 async def get_post(id: int, response: Response, db: Session = Depends(get_db), current_user: int = Depends (oauth2.get_current_user)):
     
     post = db.query(models.Post).group_by(models.Post.id).filter(models.Post.id == id).first()
@@ -46,7 +36,7 @@ async def get_post(id: int, response: Response, db: Session = Depends(get_db), c
     return post
 
 
-@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/{id}", status_code=status.HTTP_204_NO_CONTENT, description="Delete post by ID [must be logged in]")
 async def delete_post(id: int, response: Response, db: Session = Depends(get_db), current_user: int = Depends (oauth2.get_current_user)):
     post_query = db.query(models.Post).filter(models.Post.id == id)
     post = post_query.first()
@@ -64,7 +54,7 @@ async def delete_post(id: int, response: Response, db: Session = Depends(get_db)
     return Response(status_code=status.HTTP_204_NO_CONTENT)
 
 
-@router.put("/{id}", response_model=schemas.PostResponse)
+@router.put("/{id}", response_model=schemas.PostResponse, description="Update post by ID [must be logged in]")
 async def update_post(id: int, updated_post: schemas.PostCreate, response: Response, db: Session = Depends(get_db), current_user: int = Depends (oauth2.get_current_user)):
     post_query = db.query(models.Post).filter(models.Post.id == id)
     post = post_query.first()

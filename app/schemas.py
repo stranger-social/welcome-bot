@@ -5,6 +5,8 @@ from datetime import datetime
 class UserCreate(BaseModel):
     email: EmailStr
     password: str
+    send_alerts: bool = True
+    mastodon_acct: str
 
 class UserLogin(BaseModel):
     email: EmailStr
@@ -16,6 +18,8 @@ class UserResponse(BaseModel):
     created_at: datetime
     is_active: bool
     is_admin: bool
+    send_alerts: bool
+    mastodon_acct: str
 
     class Config:
         orm_mode = True
@@ -34,6 +38,16 @@ class TokenData(BaseModel):
 
 class MastodonUserCreate(BaseModel):    
     acct: str
+
+class MastodonUserResponse(BaseModel):
+    id: int
+    acct: str
+    created_at: datetime
+    welcomed: bool
+    welcomed_at: Optional[datetime] = None
+
+    class Config:
+        orm_mode = True
 
 class PostBase(BaseModel):
     title: str
