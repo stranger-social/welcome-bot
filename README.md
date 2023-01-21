@@ -57,6 +57,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES=2
 - [x] Mark each message as sent to user to avoid sending the same message multiple times.
 - [x] Add manual Account entry to database for testing and debugging.
 - [ ] Schedule messages to be sent at a later time based on delay.
+- [ ] Auto follow. Set user accounts to follow other accounts such as an Update or Notifications account.
 - [ ] Add bot stats to API.
 - [ ] Add stop bot command to API.
 - [ ] Clean up logger.
