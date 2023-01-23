@@ -74,7 +74,7 @@ async def stream_notifications():
                 logger.warning(f"Response status: {response.status}")
                 # Log response content
                 logger.warning(f"Response content: {await response.text()}")
-                return False
+                return None
 
 
 # Check post_id sent to mastodon_acct_id in the database
