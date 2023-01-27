@@ -43,38 +43,48 @@ async def add_mastodon_acct(acct: schemas.MastodonUserCreate):
 async def stream_notifications():
     # Use the base URL and the endpoint: GET /api/v1/streaming/user/notification HTTP/1.1
     # https://docs.joinmastodon.org/methods/streaming/#notification
-    async with aiohttp.ClientSession() as session:
-        async with session.get(f"{settings.mastodon_base_url}/api/v1/notifications", headers={"Authorization": f"Bearer {settings.mastodon_access_token}"}) as response:
-            if response.status == 200:
-                logger.debug(f"Response status: {response.status}")
-                # Read the response as JSON
-                data = await response.json()
-                # Check if the response is a list
-                if isinstance(data, list):
-                    # Interate over the list and find the type: admin.sign_up
-                    for item in data:
-                        if item["type"] == "admin.sign_up":
-                            # Get the user's acct
-                            acct = item["account"]["acct"]
-                            logger.debug(f"New user: {acct}")
-                            # Add the user's acct to the database
-                            await add_mastodon_acct(acct)
-                            # Clear the notifications
-                            item_id = item["id"]
-                            logger.debug(f"item_id:{item_id}")
-                            async with session.post(f"{settings.mastodon_base_url}/api/v1/notifications/{item_id}/dismiss", headers={"Authorization": f"Bearer {settings.mastodon_access_token}"}) as response:
-                                if response.status == 200:
-                                    logger.debug(f"Response status: {response.status}")
-                                    logger.debug(f"Notifications cleared")
-                                else:
-                                    logger.warning(f"Response status: {response.status}")
-                                    logger.warning(f"Response content: {await response.text()}")
-            else:
-                # Log response status
-                logger.warning(f"Response status: {response.status}")
-                # Log response content
-                logger.warning(f"Response content: {await response.text()}")
-                return None
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.get(f"{settings.mastodon_base_url}/api/v1/notifications", headers={"Authorization": f"Bearer {settings.mastodon_access_token}"}) as response:
+                if response.status == 200:
+                    logger.debug(f"Response status: {response.status}")
+                    # Read the response as JSON
+                    data = await response.json()
+                    # Check if the response is a list
+                    if isinstance(data, list):
+                        # Interate over the list and find the type: admin.sign_up
+                        for item in data:
+                            if item["type"] == "admin.sign_up":
+                                # Get the user's acct
+                                acct = item["account"]["acct"]
+                                logger.debug(f"New user: {acct}")
+                                # Add the user's acct to the database
+                                await add_mastodon_acct(acct)
+                                # Clear the notifications
+                                item_id = item["id"]
+                                logger.debug(f"item_id:{item_id}")
+                                async with session.post(f"{settings.mastodon_base_url}/api/v1/notifications/{item_id}/dismiss", headers={"Authorization": f"Bearer {settings.mastodon_access_token}"}) as response:
+                                    if response.status == 200:
+                                        logger.debug(f"Response status: {response.status}")
+                                        logger.debug(f"Notifications cleared")
+                                    else:
+                                        logger.warning(f"Response status: {response.status}")
+                                        logger.warning(f"Response content: {await response.text()}")
+                elif response.status == 500:
+                    logger.warning(f"Response status: {response.status}")
+                    logger.warning(f"Server error, waiting 2 minutes before trying again")
+                    await asyncio.sleep(120) # Wait 2 minutes for error to resolve before trying again
+                    return None
+                else:
+                    # Log response status
+                    logger.warning(f"Response status: {response.status}")
+                    # Log response content
+                    logger.warning(f"Response content: {await response.text()}")
+                    return None
+    except Exception as e:
+        logger.error(f"stream_notifications | Exception occured: {e}")
+        await asyncio.sleep(120) # Wait 2 minutes for error to resolve before trying again
+        return None
 
 
 # Check post_id sent to mastodon_acct_id in the database
