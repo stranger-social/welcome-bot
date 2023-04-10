@@ -1,9 +1,12 @@
 from .config import settings
 
 import sys
-from fastapi import FastAPI, File
+import asyncio
+
+from fastapi import FastAPI, File, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from .routers import auth, admin, post, bot, account
+from app import welcome_bot
 
 import logging
 
@@ -33,7 +36,7 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.include_router(bot.router)
+# app.include_router(bot.router)
 app.include_router(post.router)
 app.include_router(account.router)
 app.include_router(admin.router)
@@ -50,8 +53,14 @@ logger.addHandler(handler)
 
 
 @app.on_event("startup")
-def setup_logging():
-    pass
+async def startup_event():
+    # Start clock-bot
+    logger.debug("welcoem-bot debug mode")
+    background_tasks = BackgroundTasks()
+    background_tasks.add_task(asyncio.create_task(welcome_bot.welcome_bot_main()))
+    # List background tasks in debug mode
+    logger.debug(f"background_tasks: {background_tasks}")
+    logger.info("welcome-bot started")
 
 # Favicon
 @app.get("/favicon.ico")

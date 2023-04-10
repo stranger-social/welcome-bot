@@ -350,3 +350,4 @@ async def monitor_database():
 # Main loop
 async def welcome_bot_main():
     await asyncio.gather(monitor_instance(), monitor_database())
+    logger.info("Welcome bot started")
