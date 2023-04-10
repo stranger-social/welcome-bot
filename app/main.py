@@ -18,7 +18,7 @@ Use the API interface to add welcome messages to the database and start the bot.
 app = FastAPI(
     title="welcome-bot",
     description=description,
-    version="0.2.1",
+    version="0.2.2",
     contact={
         "name": "azcoigreach",
         "url": "https://strangerproduction.com",
