@@ -38,6 +38,7 @@ Setting the Environment Variable `QUIET` to `True` will disable the bot from sen
 
 The following environment variables are required to run the bot, and should be set in the .env file.
 ```
+API_PORT=8080
 QUIET=True/False
 LOGGING_LEVEL=INFO
 MASTODON_ACCESS_TOKEN=The access token for your bot account on your Mastodon instance
@@ -79,3 +80,8 @@ ACCESS_TOKEN_EXPIRE_MINUTES=2
 - Added bot user alerts in Mastodon as a direct message.
 - Added endpoints for Mastodon accounts.
 - Added is_running to start endpoint to prevernt multiple instances of the bot from running.
+
+### 0.2.2 (2023-04-10)
+
+- Added docker-compose-prod.yml
+- Auto start app
